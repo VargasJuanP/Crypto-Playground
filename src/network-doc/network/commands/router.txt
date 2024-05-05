@@ -1,0 +1,59 @@
+enable
+
+    copy running-config startup-config
+
+    conf term
+
+        hostname nombre
+
+        no ip domain-lookup
+
+        banner motd #mensaje# (el mensaje va entre los numerales)
+
+        enable password hola123
+
+        interface nombre_de_la_interfaz (FastEthernet0/0)
+
+            ip address ip_interface ip_mascara
+
+            speed velocidad (en cisco pt esta 10 , 100 o auto)
+
+            duplex half  (o) duplex full (o) duplex auto
+
+            tx-ring-limit numero (1-32767 en cisco)
+
+            description mensaje
+
+            no shutdown
+
+        interface nombre_de_la_interfaz (Serial0/0/0)
+
+            clock rate numero (hay una serie de clock rates aceptados por ejemplo 64000)
+
+            no shutdown
+
+        line vty numero numero (line vty 0 4)
+
+            password hola
+
+            exec-timeout numero ?numero
+
+            logging synchronous
+
+            login
+
+
+        line con numero (line con 0)
+
+            exec-timeout numero ?numero (exec-timeout 1 60 (1 minuto 60 segundos), exec-timeout (1 minuto), el segundo es opcional)
+
+            password hola
+
+            logging synchronous
+
+            login
+
+
+
+
+
