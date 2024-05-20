@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
-import { NetworkDocModule } from './network-doc/network-doc.module';
+import { NetworkModule } from './network/network.module';
 
 @Module({
   imports: [
@@ -18,7 +18,7 @@ import { NetworkDocModule } from './network-doc/network-doc.module';
         synchronize: true
     }),
     AuthModule,
-    NetworkDocModule
+    NetworkModule
   ],
   controllers: [],
   providers: [],

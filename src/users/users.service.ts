@@ -13,10 +13,8 @@ export class UsersService {
     private readonly usersRepository: Repository<User>
   ) {}
 
-
   async create(createUserDto: CreateUserDto) {
-    const user = this.usersRepository.create(createUserDto);
-    return await this.usersRepository.save(user);
+    return await this.usersRepository.save(createUserDto);
   }
 
   async findAll() {
