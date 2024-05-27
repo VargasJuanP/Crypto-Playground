@@ -1,5 +1,5 @@
 import { User } from "src/users/entities/user.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
 
 @Entity()
 @Unique(['name', 'user'])
@@ -16,5 +16,8 @@ export class Network {
 
     @ManyToOne(() => User, (user) => user.networks)
     user: User;
+
+    @UpdateDateColumn()
+    lastUpdated: Date;
 
 }

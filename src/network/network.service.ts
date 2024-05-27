@@ -18,7 +18,7 @@ export class NetworkService {
   async findAllMyNetworks(userId: number) {
     return await this.networkRepository.find({
       where: { user: { id: userId } },
-      select: ['id', 'name']
+      select: ['id', 'name', 'lastUpdated']
     });
   }
 
