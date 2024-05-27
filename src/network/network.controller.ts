@@ -5,7 +5,6 @@ import { CreateNetworkDto } from './dto/create-network.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 
 @Controller('networks')
-@UseGuards(AuthGuard)
 export class NetworkController {
   constructor(private readonly networkService: NetworkService) {}
 

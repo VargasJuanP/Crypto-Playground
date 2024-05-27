@@ -81,13 +81,7 @@ abstract class NetworkDevice {
 
         for (const [command, interfaces] of Object.entries(commandInterfaces)) {
 
-            if (interfaces.length === 1) {
-                this.enterInterface(interfaces[0]);
-                this.commands.push(command);
-                continue;
-            }
-
-            const range = this.buildInterfaceRange(interfaces);
+            const range = interfaces.length === 1 ? interfaces[0] : this.buildInterfaceRange(interfaces);
 
             if (!summarizedCommands[range]) {
                 summarizedCommands[range] = [];
@@ -152,7 +146,7 @@ abstract class NetworkDevice {
 }
 
 export class Switch extends NetworkDevice {
-    protected interfaces: SwitchInterface[];
+    interfaces: SwitchInterface[];
 
     constructor(switchConfig: any) {
         super(switchConfig);
@@ -192,35 +186,37 @@ export class Switch extends NetworkDevice {
 }
 
 export class Router extends NetworkDevice {
-    protected interfaces: RouterInterface[];
+    interfaces: RouterInterface[];
+    private rip: string[];
 
     constructor(routerConfig: any) {
         super(routerConfig);
 
         this.interfaces = routerConfig.ports.map((interfaceConfig: any) => new RouterInterface(interfaceConfig));
+        this.rip = routerConfig.rip;
 
-        this.setRouterCommands(routerConfig);
+        this.setRouterCommands();
     }
 
-    private setRouterCommands(routerConfig: any) {
+    private setRouterCommands() {
         this.enterEnable();
         this.enterConfTerm();
         this.setHostname();
         this.setMotd();
-        this.setRoutes(routerConfig.routes);
+        this.setRip();
         this.summarizeInterfacesCommands();
         this.end();
         this.copyRunningConfig();
         this.clearCommandsIfEmptyConfig();
     }
 
-    private setRoutes(routes: any) {
-        this.commands.push("router rip");
+    private setRip() {
+        if (this.rip) {
+            this.commands.push("router rip");
 
-        routes.forEach((network: string) => {
-            this.commands.push(`network ${network}`);
-        });
-
-        this.exit();
+            this.rip.forEach((network: string) => {
+                this.commands.push(`network ${network}`);
+            });
+        }
     }
 }
