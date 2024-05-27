@@ -19,7 +19,11 @@ export class PC {
 
     private setIpConfig() {
         if (this._ip && this._mask && this._gateway) {
-            this._commands.push(`ipconfig ${this._ip} ${this._mask} ${this._gateway}`);
+            if (this._gateway) {
+                this._commands.push(`ipconfig ${this._ip} ${this._mask} ${this._gateway}`);
+            } else {
+                this._commands.push(`ipconfig ${this._ip} ${this._mask}`);
+            }
         }
     }
 
