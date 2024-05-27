@@ -1,4 +1,4 @@
-import { Dot1Q, Network, Vlan } from "./interfaces";
+import { Dot1Q, Vlan } from "./interfaces";
 
 export abstract class Interface {
     private _name: string;
@@ -91,7 +91,8 @@ export class SwitchInterface extends Interface {
 }
 
 export class RouterInterface extends Interface {
-    private _network: Network;
+    private _ip: string;
+    private _mask: string;
     private _dot1q: Dot1Q[];
     private _subIntCommands: string[];
 
@@ -102,7 +103,9 @@ export class RouterInterface extends Interface {
     constructor(config: any) {
         super(config);
 
-        this._network = config.net;
+        this._ip = config.ip;
+        this._mask = config.mask;
+
         this._dot1q = config.dot1q;
         this._subIntCommands = [];
 
@@ -115,8 +118,8 @@ export class RouterInterface extends Interface {
     }
 
     private setIpConfiguration() {
-        if (this._network) {
-            this.commands.push(`ip address ${this._network.address} ${this._network.mask}`);
+        if (this._ip && this._mask) {
+            this.commands.push(`ip address ${this._ip} ${this._mask}`);
         }
     }
 
@@ -124,7 +127,7 @@ export class RouterInterface extends Interface {
         this._dot1q.forEach((dot1q: Dot1Q) => {
             this.subIntCommands.push(`interface ${this.name}.${dot1q.vlan.id}`);
             this.subIntCommands.push(`encapsulation dot1Q ${dot1q.vlan.id}`);
-            this.subIntCommands.push(`ip address ${dot1q.network.address} ${dot1q.network.mask}`);
+            this.subIntCommands.push(`ip address ${dot1q.ip} ${dot1q.mask}`);
         });
     }
 }

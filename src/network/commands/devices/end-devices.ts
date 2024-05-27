@@ -1,7 +1,6 @@
-import { Network } from "./interfaces";
-
 export class PC {
-    private _network: Network;
+    private _mask: string;
+    private _ip: string;
     private _gateway: string;
     private _commands: string[];
 
@@ -10,15 +9,19 @@ export class PC {
     }
 
     constructor(config: any) {
-        this._network = config.network;
-        this._gateway = config._gateway;
-        this._commands = []
+        this._ip = config.ip;
+        this._mask = config.mask;
+        this._gateway = config.gateway;
+        this._commands = [];
 
-        this.setIpConfig()
+        this.setIpConfig();
     }
 
     private setIpConfig() {
-        this._commands.push(`ipconfig ${this._network.address} ${this._network.mask} ${this._gateway}`)
+        if (this._ip && this._mask && this._gateway) {
+            this._commands.push(`ipconfig ${this._ip} ${this._mask} ${this._gateway}`);
+        }
     }
 
 }
+

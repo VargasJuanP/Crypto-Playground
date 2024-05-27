@@ -226,10 +226,7 @@ export class Router extends NetworkDevice {
     private setRip() {
         if (this._rip) {
             this.commands.push("router rip");
-
-            this._rip.forEach((network: string) => {
-                this.commands.push(`network ${network}`);
-            });
+            this.commands.push(`network ${this._rip}`);
         }
     }
 
