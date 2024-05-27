@@ -125,9 +125,11 @@ export class RouterInterface extends Interface {
 
     private setSubIntCommands() {
         this._dot1q.forEach((dot1q: Dot1Q) => {
-            this.subIntCommands.push(`interface ${this.name}.${dot1q.vlan.id}`);
-            this.subIntCommands.push(`encapsulation dot1Q ${dot1q.vlan.id}`);
-            this.subIntCommands.push(`ip address ${dot1q.ip} ${dot1q.mask}`);
+            if (dot1q.vlan && dot1q.ip && dot1q.mask) {
+                this.subIntCommands.push(`interface ${this.name}.${dot1q.vlan.id}`);
+                this.subIntCommands.push(`encapsulation dot1Q ${dot1q.vlan.id}`);
+                this.subIntCommands.push(`ip address ${dot1q.ip} ${dot1q.mask}`);
+            }
         });
     }
 }
