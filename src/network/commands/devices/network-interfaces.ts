@@ -17,16 +17,13 @@ export abstract class Interface {
     }
 
     constructor(config: any) {
-        this._name = this.name;
+        this._name = config.name;
         this._speed = config.speed;
         this._duplex = config.duplex;
         this._description = config.description;
         this._status = config.status;
         this._commands = [];
-        this.setConfigCommands()
-    }
 
-    private setConfigCommands() {
         this.setInterfaceSpeed();
         this.setInterfaceDuplex();
         this.setInterfaceDescription();
@@ -73,19 +70,21 @@ export class SwitchInterface extends Interface {
         super(config);
         this._mode = config.mode;
         this._vlan = config.vlan;
-        this.setSwitchInterfaceCommands();
-    }
 
-    private setSwitchInterfaceCommands() {
         this.setInterfaceMode();
     }
 
     private setInterfaceMode() {
-        if (this._mode == "trunk") {
-            this.commands.push("switchport mode trunk");
-        } else if (this._mode == "access") {
-            this.commands.push("switchport mode access");
-            this.commands.push(`switchport access vlan ${this._vlan.id}`);
+        switch (this._mode) {
+            case 'trunk':
+                this.commands.push('switchport mode trunk');
+                break;
+            case 'access':
+                this.commands.push('switchport mode access');
+                if (this._vlan) {
+                    this.commands.push(`switchport access vlan ${this._vlan.id}`);
+                }
+                break;
         }
     }
 }
@@ -98,7 +97,7 @@ export class RouterInterface extends Interface {
         this._network = config.network;
         this.setRouterInterfaceCommands();
 
-        config.dot1qSubInt.forEach((dot1q: Dot1Q) => {
+        config.dot1q.forEach((dot1q: Dot1Q) => {
             this.setSubIntCommands(dot1q);
         });
     }

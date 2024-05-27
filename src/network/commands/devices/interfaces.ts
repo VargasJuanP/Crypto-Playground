@@ -5,7 +5,7 @@ export interface Network {
 
 export interface Vlan {
     readonly name: string;
-    readonly id: number;
+    readonly id: string;
 }
 
 export interface Dot1Q {

@@ -1,4 +1,16 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateNetworkDto } from './create-network.dto';
+import { IsNotEmpty, IsObject, IsOptional, IsString, MinLength } from 'class-validator';
 
-export class UpdateNetworkDto extends PartialType(CreateNetworkDto) {}
+export class UpdateNetworkDto {
+
+    @IsOptional()
+    @IsNotEmpty()
+    @IsString()
+    @MinLength(1)
+    name: string;
+
+    @IsOptional()
+    @IsNotEmpty()
+    @IsObject()
+    doc: any;
+
+}

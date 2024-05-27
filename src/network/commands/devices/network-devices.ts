@@ -12,20 +12,16 @@ abstract class NetworkDevice {
 
     constructor(config: any) {
         this._hostname = config.hostname;
-        this._motd = config.motd;
+        this._motd = config.message;
         this._commands = [];
         this.interfaces = [];
-        this.enterEnable();
-        this.enterConfigureTerminal();
-        this.setHostname();
-        this.setMotd();
     }
 
     protected enterEnable() {
         this._commands.push("enable");
     }
 
-    protected enterConfigureTerminal() {
+    protected enterConfTerm() {
         this._commands.push("configure terminal");
     }
 
@@ -49,7 +45,25 @@ abstract class NetworkDevice {
         this._commands.push("end");
     }
 
-    protected summarizeInterfacesCommands(): any {
+    protected setHostname() {
+        if (this._hostname) {
+            this._commands.push(`hostname ${this._hostname}`);
+        }
+    }
+
+    protected setMotd() {
+        if (this._motd) {
+            this._commands.push(`banner motd #${this._motd}#`);
+        }
+    }
+
+    protected clearCommandsIfEmptyConfig() {
+        if (this.commands.length <= 4) {
+            this.commands.length = 0;
+        }
+    }
+
+    protected summarizeInterfacesCommands() {
         const commandInterfaces: { [command: string]: string[] } = {};
 
         this.interfaces.forEach((switchInterface: Interface) => {
@@ -70,7 +84,6 @@ abstract class NetworkDevice {
             if (interfaces.length === 1) {
                 this.enterInterface(interfaces[0]);
                 this.commands.push(command);
-                this.exit();
                 continue;
             }
 
@@ -89,20 +102,6 @@ abstract class NetworkDevice {
             commands.forEach(command => {
                 this.commands.push(command);
             });
-
-            this.exit();
-        }
-    }
-
-    private setHostname() {
-        if (this._hostname) {
-            this._commands.push(`hostname ${this._hostname}`);
-        }
-    }
-
-    private setMotd() {
-        if (this._motd) {
-            this._commands.push(`banner motd #${this._motd}#`);
         }
     }
 
@@ -153,46 +152,64 @@ abstract class NetworkDevice {
 }
 
 export class Switch extends NetworkDevice {
-    interfaces: SwitchInterface[];
+    protected interfaces: SwitchInterface[];
 
     constructor(switchConfig: any) {
         super(switchConfig);
+        this.interfaces = (switchConfig.interfaces ?? []).map((interfaceConfig: any) => new SwitchInterface(interfaceConfig));
+        this.setSwitchCommands();
+    }
 
-        this.interfaces = switchConfig.interfaces.map((interfaceConfig: any) => new SwitchInterface(interfaceConfig));
-
+    private setSwitchCommands() {
+        this.enterEnable();
+        this.enterConfTerm();
+        this.setHostname();
+        this.setMotd();
         this.setVlans();
         this.summarizeInterfacesCommands();
         this.end();
         this.copyRunningConfig();
+        this.clearCommandsIfEmptyConfig();
     }
 
     private setVlans() {
-        const vlans: { [name: string]: number } = {};
+        const vlans: { [id: string]: string } = {};
 
         this.interfaces.forEach((switchInterface: SwitchInterface) => {
-            vlans[switchInterface.vlan.name] = switchInterface.vlan.id;
+            vlans[switchInterface.vlan.id] = switchInterface.vlan.name;
         });
 
-        for (const [name, id] of Object.entries(vlans)) {
+        for (const [id, name] of Object.entries(vlans)) {
             this.commands.push(`vlan ${id}`);
-            this.commands.push(`name ${name}`);
-            this.exit();
+
+            if (name) {
+                this.commands.push(`name ${name}`);
+            }
         }
     }
 }
 
 export class Router extends NetworkDevice {
-    interfaces: RouterInterface[];
+    protected interfaces: RouterInterface[];
 
     constructor(routerConfig: any) {
         super(routerConfig);
 
         this.interfaces = routerConfig.interfaces.map((interfaceConfig: any) => new RouterInterface(interfaceConfig));
 
-        this.summarizeInterfacesCommands();
+        this.setRouterCommands(routerConfig);
+    }
+
+    private setRouterCommands(routerConfig: any) {
+        this.enterEnable();
+        this.enterConfTerm();
+        this.setHostname();
+        this.setMotd();
         this.setRoutes(routerConfig.routes);
+        this.summarizeInterfacesCommands();
         this.end();
-        this.copyRunningConfig()
+        this.copyRunningConfig();
+        this.clearCommandsIfEmptyConfig();
     }
 
     private setRoutes(routes: any) {

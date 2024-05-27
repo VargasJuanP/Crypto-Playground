@@ -17,10 +17,6 @@ export class UsersService {
     return await this.usersRepository.save(createUserDto);
   }
 
-  async findAll() {
-    return await this.usersRepository.find();
-  }
-
   async findOne(id: number) {
     return await this.usersRepository.findOneBy({ id });
   }
@@ -33,7 +29,4 @@ export class UsersService {
     return await this.usersRepository.update(id, updateUserDto);
   }
 
-  async remove(id: number) {
-    return await this.usersRepository.softDelete({ id });
-  }
 }

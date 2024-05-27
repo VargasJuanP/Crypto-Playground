@@ -1,7 +1,8 @@
 import { User } from "src/users/entities/user.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
+@Unique(['name', 'user'])
 export class Network {
 
     @PrimaryGeneratedColumn()
@@ -10,10 +11,10 @@ export class Network {
     @Column()
     name: string;
 
-    @Column({ type: "json" })
+    @Column({ type: "json", default: {} })
     doc: any;
 
-    @OneToMany(() => User, (user) => user.networks)
+    @ManyToOne(() => User, (user) => user.networks)
     user: User;
 
 }
