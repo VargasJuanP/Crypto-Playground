@@ -81,7 +81,7 @@ export class SwitchInterface extends Interface {
                 break;
             case 'access':
                 this.commands.push('switchport mode access');
-                if (this._vlan) {
+                if (this._vlan.id) {
                     this.commands.push(`switchport access vlan ${this._vlan.id}`);
                 }
                 break;

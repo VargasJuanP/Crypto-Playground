@@ -156,7 +156,7 @@ export class Switch extends NetworkDevice {
 
     constructor(switchConfig: any) {
         super(switchConfig);
-        this.interfaces = (switchConfig.interfaces ?? []).map((interfaceConfig: any) => new SwitchInterface(interfaceConfig));
+        this.interfaces = (switchConfig.ports ?? []).map((interfaceConfig: any) => new SwitchInterface(interfaceConfig));
         this.setSwitchCommands();
     }
 
@@ -176,7 +176,9 @@ export class Switch extends NetworkDevice {
         const vlans: { [id: string]: string } = {};
 
         this.interfaces.forEach((switchInterface: SwitchInterface) => {
-            vlans[switchInterface.vlan.id] = switchInterface.vlan.name;
+            if (switchInterface.vlan.id) {
+                vlans[switchInterface.vlan.id] = switchInterface.vlan.name;
+            }
         });
 
         for (const [id, name] of Object.entries(vlans)) {
@@ -195,7 +197,7 @@ export class Router extends NetworkDevice {
     constructor(routerConfig: any) {
         super(routerConfig);
 
-        this.interfaces = routerConfig.interfaces.map((interfaceConfig: any) => new RouterInterface(interfaceConfig));
+        this.interfaces = routerConfig.ports.map((interfaceConfig: any) => new RouterInterface(interfaceConfig));
 
         this.setRouterCommands(routerConfig);
     }
