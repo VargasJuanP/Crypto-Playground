@@ -1,4 +1,11 @@
-import { Controller, Get, Body, Patch, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Body,
+  Patch,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
@@ -22,10 +29,9 @@ export class UsersController {
   private excludeSensitiveFields(user: any) {
     if (user) {
       delete user.password;
-      delete user.id
+      delete user.id;
       // delete other sensitive fields if any
     }
     return user;
   }
-
 }

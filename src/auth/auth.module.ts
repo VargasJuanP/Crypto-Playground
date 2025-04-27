@@ -9,14 +9,14 @@ import { AuthGuard } from './guard/auth.guard';
 @Module({
   imports: [
     JwtModule.register({
-        global: true,
-        secret: jwtConstants.secret,
-        signOptions: { expiresIn: '1d' },
+      global: true,
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '1d' },
     }),
-    forwardRef(() => UsersModule)
+    forwardRef(() => UsersModule),
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthGuard],
-  exports: [AuthGuard]
+  exports: [AuthGuard],
 })
 export class AuthModule {}
